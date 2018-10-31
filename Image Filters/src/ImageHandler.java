@@ -130,6 +130,34 @@ public class ImageHandler {
 		}
 		return out;
 	}
+	
+	public static BufferedImage filterMaxRange(BufferedImage image) {
+		int min = 255, max = 0;
+		for(int y = 0; y < image.getHeight(); y++) {
+			for(int x = 0; x < image.getWidth(); x++) {
+				int val = image.getRGB(x, y) & 0xff;
+				if(val < min) {
+					min = val;
+				}
+				if(val > max) {
+					max = val;
+				}
+			}
+		}
+		double scale = 255/(max-min);
+		
+		BufferedImage out = new BufferedImage(image.getWidth(),image.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		for(int y = 0; y < image.getHeight(); y++) {
+			for(int x = 0; x < image.getWidth(); x++) {
+				int val = image.getRGB(x, y) & 0xff;
+				val -= min;
+				val *= scale;
+				Color color = new Color(val, val, val);
+				out.setRGB(x, y, color.argb);
+			}
+		}
+		return out;
+	}
 
 	public static BufferedImage filterVerticalEdgeDetect(BufferedImage image) {
 		BufferedImage gray = filterGrayscale(image);
